@@ -2,7 +2,9 @@
 
 The template is published at `https://railway.com/deploy/dagster`. Its Railway template ID is `03d12173-a2b4-4ebc-bb7d-a6ea683f4a22`, and its deployment code is `dagster`.
 
-Both application services build from the public `tech-progress/railway-template-dagster` repository's `release-v1` branch. The current template release is `v1.0.1`. Tag each verified release with SemVer, then move the matching major release branch only as an explicit template release because connected Railway services may autodeploy branch updates.
+Both application services build from the public `tech-progress/railway-template-dagster` repository's `release-v1` branch. The current template release is `v1.0.2`. Tag each verified release with SemVer, then move the matching major release branch only as an explicit template release because connected Railway services may autodeploy branch updates.
+
+The current application pins are Dagster/webserver `1.13.25`, dagster-postgres `0.29.25`, and psycopg2-binary `2.9.13`, running on digest-pinned Python `3.12.15` Bookworm. Local smoke tests use PostgreSQL `17.11` Bookworm; Railway's managed database service remains unchanged.
 
 Before moving the release branch, update `VERSION` and `CHANGELOG.md` in the private monorepo and verify the standalone mirror. Run these commands from the standalone public repository:
 
@@ -42,7 +44,7 @@ railway templates create --project <PROJECT_ID> --environment <ENVIRONMENT_ID> -
 ./scripts/audit-template.sh <TEMPLATE_ID>
 railway templates publish <TEMPLATE_ID> \
   --category Automation \
-  --description "Deploy Dagster with a webserver, daemon, example asset job, and PostgreSQL." \
+  --description "Production-ready Dagster orchestration with daemon and durable PostgreSQL." \
   --readme-file MARKETPLACE.md \
   --json
 ```

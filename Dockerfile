@@ -1,4 +1,4 @@
-FROM python:3.12.11-slim-bookworm@sha256:519591d6871b7bc437060736b9f7456b8731f1499a57e22e6c285135ae657bf7
+FROM python:3.12.15-slim-bookworm@sha256:54c85f3c47607a77f32adec749d3c81d1348bf25833671f512b26a9b6d778cb3
 
 ENV DAGSTER_HOME=/opt/dagster/dagster_home \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir --requirement requirements.txt
 
 COPY app ./app
 COPY dagster.yaml workspace.yaml ./
-COPY scripts/daemon_health.py scripts/start.sh ./scripts/
+COPY scripts/daemon_health.py scripts/database.sh scripts/start.sh ./scripts/
 RUN chmod 0555 ./scripts/daemon_health.py ./scripts/start.sh \
     && mkdir -p "${DAGSTER_HOME}" \
     && cp dagster.yaml "${DAGSTER_HOME}/dagster.yaml"

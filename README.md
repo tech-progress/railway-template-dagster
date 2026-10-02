@@ -6,7 +6,11 @@ Upstream project: [Dagster](https://dagster.io).
 
 [Deploy Dagster on Railway](https://railway.com/deploy/dagster)
 
-The current template release is `v1.0.1`; Dagster itself is pinned separately to `1.13.15`. See [CHANGELOG.md](CHANGELOG.md) for template changes.
+The current template release is `v1.0.2`; Dagster itself is pinned separately to `1.13.25`. See [CHANGELOG.md](CHANGELOG.md) for template changes.
+
+Dagster's webserver is also `1.13.25`, its PostgreSQL integration is `0.29.25`, and psycopg2-binary is `2.9.13`. The runtime uses Python `3.12.15` on Debian Bookworm; local Compose checks use PostgreSQL `17.11` on Bookworm. Both images are pinned by digest.
+
+Startup normalizes Railway's `postgresql://` (or `postgres://`) database URL to the installed psycopg2 driver before migrations and service launch, so SQLAlchemy's default-driver changes do not require new environment variables.
 
 The included `daily_order_summary` asset and `daily_metrics_job` give a new deployment a deterministic first run. Replace `app/definitions.py` with your own assets, jobs, schedules, sensors, and resources.
 

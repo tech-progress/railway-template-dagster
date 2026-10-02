@@ -21,12 +21,14 @@ required_files=(
   "requirements.txt"
   "scripts/audit-template.sh"
   "scripts/daemon_health.py"
+  "scripts/database.sh"
   "scripts/remote-smoke.sh"
   "scripts/smoke.sh"
   "scripts/start.sh"
   "template-defaults.json"
   "tests/test_daemon_health.py"
   "tests/test_definitions.py"
+  "tests/test_start.py"
   "workspace.yaml"
 )
 
@@ -78,13 +80,20 @@ docker compose -f "${template_root}/compose.yaml" config --quiet
 jq empty "${template_root}/template-defaults.json"
 bash -n \
   "${template_root}/scripts/audit-template.sh" \
+  "${template_root}/scripts/database.sh" \
   "${template_root}/scripts/remote-smoke.sh" \
   "${template_root}/scripts/smoke.sh" \
   "${template_root}/scripts/start.sh"
 python3 -c \
   "compile(open('${template_root}/scripts/daemon_health.py', encoding='utf-8').read(), 'scripts/daemon_health.py', 'exec')"
+(cd "${template_root}" && python3 -m unittest discover -s tests -p test_start.py)
 
-grep -Fq "dagster==1.13.15" "${template_root}/requirements.txt"
+grep -Fq "dagster==1.13.25" "${template_root}/requirements.txt"
+grep -Fxq "dagster-webserver==1.13.25" "${template_root}/requirements.txt"
+grep -Fxq "dagster-postgres==0.29.25" "${template_root}/requirements.txt"
+grep -Fxq "psycopg2-binary==2.9.13" "${template_root}/requirements.txt"
+grep -Fq "python:3.12.15-slim-bookworm@sha256:54c85f3c47607a77f32adec749d3c81d1348bf25833671f512b26a9b6d778cb3" "${template_root}/Dockerfile"
+grep -Fq "postgres:17.11-bookworm@sha256:639ab7ceb90e13123085b741fb31ef493fba25463002f6da665352e7b534b652" "${template_root}/compose.yaml"
 grep -Fq "max_concurrent_runs: 1" "${template_root}/dagster.yaml"
 grep -Fq "class: DefaultRunLauncher" "${template_root}/dagster.yaml"
 

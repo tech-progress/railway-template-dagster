@@ -10,13 +10,17 @@ curl --fail --silent --show-error "${base_url}/graphql" \
   --data '{"query":"query { version repositoriesOrError { __typename } }"}' |
   grep -q '"version"'
 
-if [[ "${base_url}" == "http://127.0.0.1:3000" ]]; then
+if [[ "${base_url}" == "http://127.0.0.1:3000" || -n "${DAGSTER_DAEMON_CONTAINER:-}" ]]; then
+  exec_with_database() {
+    docker exec "${container}" bash -c 'source ./scripts/database.sh; exec "$@"' bash "$@"
+  }
+
   run_id="$(
-    docker exec "${container}" \
+    exec_with_database \
       python -c "import uuid; print(uuid.uuid4())"
   )"
 
-  docker exec "${container}" \
+  exec_with_database \
     dagster job launch \
     --workspace workspace.yaml \
     --location railway_starter \
@@ -25,7 +29,7 @@ if [[ "${base_url}" == "http://127.0.0.1:3000" ]]; then
 
   for attempt in $(seq 1 30); do
     status="$(
-      docker exec "${container}" \
+      exec_with_database \
         python -c \
           "import sys; from dagster import DagsterInstance; run = DagsterInstance.get().get_run_by_id(sys.argv[1]); print(run.status.value if run else 'MISSING')" \
           "${run_id}"

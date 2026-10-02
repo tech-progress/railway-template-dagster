@@ -8,6 +8,8 @@ if [[ "${mode}" != "webserver" && "${mode}" != "daemon" ]]; then
   exit 64
 fi
 
+source "$(dirname "${BASH_SOURCE[0]}")/database.sh"
+
 for attempt in $(seq 1 30); do
   if dagster instance migrate; then
     break
